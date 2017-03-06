@@ -14,6 +14,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strconv"
 	"strings"
 	"text/template"
@@ -199,6 +200,16 @@ type Param struct {
 	Type string
 }
 
+// CalledArgument will correctly generate call to a function with a
+// variadic parameter
+func (p *Param) CalledArgument() string {
+	variadic, _ := regexp.MatchString("^[.]{3}", p.Type)
+	if variadic {
+		return p.Name + "..."
+	}
+	return p.Name
+}
+
 func (p Pkg) funcsig(f *ast.Field) Func {
 	fn := Func{Name: f.Names[0].Name}
 	typ := f.Type.(*ast.FuncType)
@@ -261,7 +272,7 @@ const stub = "func ({{.Recv}}) {{.Name}}" +
 	"({{range .Params}}{{.Name}} {{.Type}}, {{end}})" +
 	"({{range .Res}}{{.Name}} {{.Type}}, {{end}})" +
 	"{\n" + "{{.RecvShort}}.{{.Name}}FuncInvoked = true" + "\n" +
-	"return {{.RecvShort}}.{{.Name}}Func({{range .Params}}{{.Name}}, {{end}})" +
+	"return {{.RecvShort}}.{{.Name}}Func({{range .Params}}{{.CalledArgument}}, {{end}})" +
 	"\n" + "}\n\n"
 
 var tmpl = template.Must(template.New("test").Parse(stub))
