@@ -119,7 +119,7 @@ func TestFuncs(t *testing.T) {
 				},
 				{
 					Name:   "WriteHeader",
-					Params: []Param{{Type: "int"}},
+					Params: []Param{{Type: "int", Name: "statusCode"}},
 				},
 			},
 		},
