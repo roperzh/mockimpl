@@ -114,7 +114,7 @@ func TestFuncs(t *testing.T) {
 				},
 				{
 					Name:   "Write",
-					Params: []Param{{Type: "[]byte"}},
+					Params: []Param{{Type: "[]byte", Name: "p0"}},
 					Res:    []Param{{Type: "int"}, {Type: "error"}},
 				},
 				{
@@ -127,8 +127,11 @@ func TestFuncs(t *testing.T) {
 			iface: "http.Handler",
 			want: []Func{
 				{
-					Name:   "ServeHTTP",
-					Params: []Param{{Type: "http.ResponseWriter"}, {Type: "*http.Request"}},
+					Name: "ServeHTTP",
+					Params: []Param{
+						{Name: "p0", Type: "http.ResponseWriter"},
+						{Name: "p1", Type: "*http.Request"},
+					},
 				},
 			},
 		},

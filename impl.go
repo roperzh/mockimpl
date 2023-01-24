@@ -162,7 +162,7 @@ func (p Pkg) fullType(e ast.Expr) string {
 	return p.gofmt(e)
 }
 
-func (p Pkg) params(field *ast.Field) []Param {
+func (p Pkg) params(field *ast.Field, defaultName string) []Param {
 	var params []Param
 	typ := p.fullType(field.Type)
 	for _, name := range field.Names {
@@ -170,7 +170,7 @@ func (p Pkg) params(field *ast.Field) []Param {
 	}
 	// Handle anonymous params
 	if len(params) == 0 {
-		params = []Param{Param{Type: typ}}
+		params = []Param{Param{Type: typ, Name: defaultName}}
 	}
 	return params
 }
@@ -214,13 +214,14 @@ func (p Pkg) funcsig(f *ast.Field) Func {
 	fn := Func{Name: f.Names[0].Name}
 	typ := f.Type.(*ast.FuncType)
 	if typ.Params != nil {
-		for _, field := range typ.Params.List {
-			fn.Params = append(fn.Params, p.params(field)...)
+		for pos, field := range typ.Params.List {
+			defaultName := fmt.Sprintf("p%d", pos)
+			fn.Params = append(fn.Params, p.params(field, defaultName)...)
 		}
 	}
 	if typ.Results != nil {
 		for _, field := range typ.Results.List {
-			fn.Res = append(fn.Res, p.params(field)...)
+			fn.Res = append(fn.Res, p.params(field, "")...)
 		}
 	}
 	return fn
