@@ -374,9 +374,14 @@ func main() {
 	name := strings.TrimPrefix(recName[1], "*")
 	src2 := genStr(name, fns)
 
+	_, ifaceID, err := findInterface(iface)
+	if err != nil {
+		fatal(err)
+	}
+
 	var buf bytes.Buffer
 	fmt.Fprintf(&buf, packageStr)
-	fmt.Fprintf(&buf, "var _ %s = (*%s)(nil)\n\n", iface, name)
+	fmt.Fprintf(&buf, "var _ %s = (*%s)(nil)\n\n", ifaceID, name)
 	fmt.Fprint(&buf, string(src2))
 	buf.WriteString("\n")
 	fmt.Fprint(&buf, string(src))
